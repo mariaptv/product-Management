@@ -56,14 +56,6 @@ This is the frontend repository for the Product Management System. The applicati
 - Node.js and npm installed
 - Angular CLI installed (`npm install -g @angular/cli`)
 
-## Getting Started
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/your-repo/product-management-frontend.git
-cd product-management-frontend
-
 ## How It Works
 
 ### Components
