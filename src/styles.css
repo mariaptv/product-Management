@@ -101,4 +101,52 @@ body {
     vertical-align: middle;
   }
   
+  /* Responsive Adjustments */
+@media (max-width: 768px) {
+    .form-group {
+      margin-bottom: 1rem;
+    }
+  
+    .form-input {
+      font-size: 0.9rem;
+      padding: 0.6rem;
+    }
+  
+    .custom-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+    }
+  
+    .section-title {
+      font-size: 1.3rem;
+    }
+  
+    .custom-table {
+      font-size: 0.85rem;
+    }
+  
+    .custom-table thead th {
+      font-size: 0.85rem;
+    }
+  
+    .custom-table tbody td {
+      font-size: 0.8rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .btn-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .btn-group button {
+      margin-bottom: 0.5rem;
+    }
+  
+    .table-responsive {
+      overflow-x: auto;
+    }
+  }
+  
   
