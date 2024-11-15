@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
   productForm!: FormGroup;
   products: any[] = [];
   categories: string[] = ['Electronics', 'Books', 'Clothing', 'Home & Kitchen', 'Sports'];
+  title: any;
 
   constructor(private fb: FormBuilder, private productsService: ProductsService) {}
 
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit {
       sku: ['', Validators.required],
       description: ['', Validators.required],
       stock: [0, Validators.required],
-      addedDate: ['', Validators.required],
+      addedDate: [null, Validators.required], // Use `null` for initial state
     });
 
     this.loadProducts();
@@ -43,9 +44,16 @@ export class AppComponent implements OnInit {
   }
 
   save(): void {
+    const formValue = this.productForm.value;
+
+    // Format date for backend as a string (yyyy-mm-dd)
+    if (formValue.addedDate && typeof formValue.addedDate === 'object') {
+      const { year, month, day } = formValue.addedDate;
+      formValue.addedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
+
     if (this.isEditing) {
       // Update existing product
-      const formValue = this.productForm.value;
       this.productsService.updateProduct(formValue.id, formValue).subscribe(
         (resp) => {
           this.productForm.reset();
@@ -61,7 +69,6 @@ export class AppComponent implements OnInit {
       );
     } else {
       // Create new product
-      const formValue = this.productForm.value;
       this.productsService.saveProduct(formValue).subscribe(
         (resp) => {
           this.productForm.reset();
@@ -76,12 +83,9 @@ export class AppComponent implements OnInit {
   }
 
   edit(product: any): void {
-    const dateParts = product.addedDate.split('-').map((part: string) => parseInt(part, 10));
-    const addedDate = {
-      year: dateParts[0],
-      month: dateParts[1],
-      day: dateParts[2],
-    };
+    // Convert the backend date format (yyyy-mm-dd) to the format required by ngbDatepicker
+    const [year, month, day] = product.addedDate.split('-').map((part: string) => parseInt(part, 10));
+    const addedDate = { year, month, day };
 
     this.productForm.setValue({
       id: product.id,
@@ -91,7 +95,7 @@ export class AppComponent implements OnInit {
       sku: product.sku,
       description: product.description,
       stock: product.stock,
-      addedDate: addedDate,
+      addedDate: addedDate, // Use the formatted date
     });
 
     this.isEditing = true; // Switch to edit mode
