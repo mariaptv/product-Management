@@ -8,13 +8,13 @@ import { ProductsService } from './services/products/products.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'Product';
+  activeTab: number = 1; // Default to the Create Product tab
+  isEditing: boolean = false; // Tracks whether we are editing a product
   productForm!: FormGroup;
   products: any[] = [];
   categories: string[] = ['Electronics', 'Books', 'Clothing', 'Home & Kitchen', 'Sports'];
-  activeTab: number = 1; // Default to the first tab
 
-  constructor(public fb: FormBuilder, public productsService: ProductsService) {}
+  constructor(private fb: FormBuilder, private productsService: ProductsService) {}
 
   ngOnInit(): void {
     this.productForm = this.fb.group({
@@ -35,7 +35,6 @@ export class AppComponent implements OnInit {
     this.productsService.getAllProducts().subscribe(
       (resp) => {
         this.products = resp;
-        console.log(resp);
       },
       (error) => {
         console.error(error);
@@ -44,26 +43,17 @@ export class AppComponent implements OnInit {
   }
 
   save(): void {
-    const formValue = this.productForm.value;
-
-    // Convert the date to a string if it's an object
-    if (formValue.addedDate && typeof formValue.addedDate === 'object') {
-      const { year, month, day } = formValue.addedDate;
-      formValue.addedDate = `${year}-${month.toString().padStart(2, '0')}-${day
-        .toString()
-        .padStart(2, '0')}`;
-    }
-
-    if (formValue.id) {
+    if (this.isEditing) {
       // Update existing product
+      const formValue = this.productForm.value;
       this.productsService.updateProduct(formValue.id, formValue).subscribe(
         (resp) => {
           this.productForm.reset();
-          this.products = this.products.map((product: any) =>
+          this.isEditing = false;
+          this.products = this.products.map((product) =>
             product.id === resp.id ? resp : product
           );
-          // Switch to Store Products tab
-          this.activeTab = 2;
+          this.activeTab = 2; // Switch to Store Products tab
         },
         (error) => {
           console.error(error);
@@ -71,25 +61,12 @@ export class AppComponent implements OnInit {
       );
     } else {
       // Create new product
+      const formValue = this.productForm.value;
       this.productsService.saveProduct(formValue).subscribe(
         (resp) => {
           this.productForm.reset();
           this.products.push(resp);
-          // Switch to Store Products tab
-          this.activeTab = 2;
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    }
-  }
-
-  delete(product: any): void {
-    if (confirm('Are you sure you want to delete this product?')) {
-      this.productsService.deleteProduct(product.id).subscribe(
-        () => {
-          this.products = this.products.filter((p: any) => p.id !== product.id);
+          this.activeTab = 2; // Switch to Store Products tab
         },
         (error) => {
           console.error(error);
@@ -99,7 +76,6 @@ export class AppComponent implements OnInit {
   }
 
   edit(product: any): void {
-    // Convert the date string to an object for the date picker
     const dateParts = product.addedDate.split('-').map((part: string) => parseInt(part, 10));
     const addedDate = {
       year: dateParts[0],
@@ -118,7 +94,25 @@ export class AppComponent implements OnInit {
       addedDate: addedDate,
     });
 
-    // Switch to Create Product tab when editing
-    this.activeTab = 1;
+    this.isEditing = true; // Switch to edit mode
+    this.activeTab = 1; // Switch to the Create/Edit Product tab
+  }
+
+  cancelEdit(): void {
+    this.isEditing = false; // Exit edit mode
+    this.productForm.reset();
+  }
+
+  delete(product: any): void {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.productsService.deleteProduct(product.id).subscribe(
+        () => {
+          this.products = this.products.filter((p) => p.id !== product.id);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+    }
   }
 }

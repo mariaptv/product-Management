@@ -1,5 +1,4 @@
-<!-- Adjusted Navbar to start lower -->
-<div class="mt-4">
+<div class="mt-4 container-fluid">
   <!-- Tabs Navigation -->
   <ul
     ngbNav
@@ -9,52 +8,57 @@
     [destroyOnHide]="false"
   >
     <li [ngbNavItem]="1">
-      <a ngbNavLink>Create Product</a>
+      <a ngbNavLink>{{ isEditing ? 'Edit Product' : 'Create Product' }}</a>
       <ng-template ngbNavContent>
-        <!-- Create Product Tab Pane -->
         <div class="container mt-4">
-          <h2 class="section-title">Create Product</h2>
+          <h2 class="section-title">{{ isEditing ? 'Edit Product' : 'Create Product' }}</h2>
           <form [formGroup]="productForm" (ngSubmit)="save()">
-            <div class="form-group">
-              <label>Name</label>
-              <input
-                type="text"
-                formControlName="name"
-                class="form-control form-input"
-                placeholder="e.g., Amazing Product"
-              />
-              <small class="form-text text-muted">Enter the name of the product.</small>
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label>Name</label>
+                <input
+                  type="text"
+                  formControlName="name"
+                  class="form-control form-input"
+                  placeholder="e.g., Amazing Product"
+                />
+                <small class="form-text text-muted">Enter the name of the product.</small>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Price</label>
+                <input
+                  type="number"
+                  formControlName="price"
+                  class="form-control form-input"
+                  placeholder="e.g., 100.50"
+                />
+                <small class="form-text text-muted">Set the product price in USD.</small>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Price</label>
-              <input
-                type="number"
-                formControlName="price"
-                class="form-control form-input"
-                placeholder="e.g., 100.50"
-              />
-              <small class="form-text text-muted">Set the product price in USD.</small>
+
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label>Category</label>
+                <select formControlName="category" class="form-control form-input">
+                  <option value="">Select Category</option>
+                  <option *ngFor="let category of categories" [value]="category">
+                    {{ category }}
+                  </option>
+                </select>
+                <small class="form-text text-muted">Choose the appropriate category.</small>
+              </div>
+              <div class="form-group col-md-6">
+                <label>SKU</label>
+                <input
+                  type="text"
+                  formControlName="sku"
+                  class="form-control form-input"
+                  placeholder="e.g., ABC123"
+                />
+                <small class="form-text text-muted">Enter the unique SKU identifier.</small>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Category</label>
-              <select formControlName="category" class="form-control form-input">
-                <option value="">Select Category</option>
-                <option *ngFor="let category of categories" [value]="category">
-                  {{ category }}
-                </option>
-              </select>
-              <small class="form-text text-muted">Choose the appropriate category.</small>
-            </div>
-            <div class="form-group">
-              <label>SKU</label>
-              <input
-                type="text"
-                formControlName="sku"
-                class="form-control form-input"
-                placeholder="e.g., ABC123"
-              />
-              <small class="form-text text-muted">Enter the unique SKU identifier.</small>
-            </div>
+
             <div class="form-group">
               <label>Description</label>
               <textarea
@@ -64,41 +68,45 @@
               ></textarea>
               <small class="form-text text-muted">Provide a short description of the product.</small>
             </div>
-            <div class="form-group">
-              <label>Stock</label>
-              <input
-                type="number"
-                formControlName="stock"
-                class="form-control form-input"
-                placeholder="e.g., 50"
-              />
-              <small class="form-text text-muted">Enter the available stock quantity.</small>
+
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label>Stock</label>
+                <input
+                  type="number"
+                  formControlName="stock"
+                  class="form-control form-input"
+                  placeholder="e.g., 50"
+                />
+                <small class="form-text text-muted">Enter the available stock quantity.</small>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Added Date</label>
+                <input
+                  class="form-control form-input"
+                  placeholder="yyyy-mm-dd"
+                  formControlName="addedDate"
+                  ngbDatepicker
+                  #d="ngbDatepicker"
+                  (click)="d.toggle()"
+                />
+                <small class="form-text text-muted">Select the date the product was added.</small>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Added Date</label>
-              <input
-                class="form-control form-input"
-                placeholder="yyyy-mm-dd"
-                formControlName="addedDate"
-                ngbDatepicker
-                #d="ngbDatepicker"
-                (click)="d.toggle()"
-              />
-              <small class="form-text text-muted">Select the date the product was added.</small>
-            </div>
+
             <div class="btn-group mt-3">
               <button
                 type="submit"
                 class="btn btn-primary custom-btn"
                 [disabled]="productForm.invalid"
               >
-                Save
+                {{ isEditing ? 'Update Product' : 'Save Product' }}
               </button>
               <button
                 type="button"
                 class="btn btn-secondary custom-btn"
-                (click)="productForm.reset()"
-                *ngIf="productForm.value.id"
+                (click)="cancelEdit()"
+                *ngIf="isEditing"
               >
                 Cancel
               </button>
@@ -110,59 +118,57 @@
     <li [ngbNavItem]="2">
       <a ngbNavLink>Store Products</a>
       <ng-template ngbNavContent>
-        <!-- Store Products Tab Pane -->
         <div class="container mt-4">
           <h2 class="section-title">Store Products</h2>
-          <table class="table table-hover custom-table">
-            <thead class="thead-dark">
-              <tr>
-                <!-- Table headers -->
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>SKU</th>
-                <th>Description</th>
-                <th>Stock</th>
-                <th>Added Date</th>
-                <th>Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of products" class="table-row">
-                <!-- Table data -->
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.category }}</td>
-                <td>{{ item.sku }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.stock }}</td>
-                <td>{{ item.addedDate | date: 'mediumDate' }}</td>
-                <td>
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm custom-btn"
-                    (click)="edit(item)"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-danger btn-sm custom-btn"
-                    (click)="delete(item)"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-hover custom-table">
+              <thead class="thead-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th>SKU</th>
+                  <th>Description</th>
+                  <th>Stock</th>
+                  <th>Added Date</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of products" class="table-row">
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.price }}</td>
+                  <td>{{ item.category }}</td>
+                  <td>{{ item.sku }}</td>
+                  <td>{{ item.description }}</td>
+                  <td>{{ item.stock }}</td>
+                  <td>{{ item.addedDate | date: 'mediumDate' }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-success btn-sm custom-btn"
+                      (click)="edit(item)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm custom-btn"
+                      (click)="delete(item)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </ng-template>
     </li>
   </ul>
 </div>
 
-<!-- Tabs Content -->
 <div [ngbNavOutlet]="nav" class="mt-3"></div>
