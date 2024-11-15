@@ -1,25 +1,29 @@
-<!-- app.component.html -->
-
 <!-- Tabs Navigation -->
-<ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav nav-tabs">
+<ul
+  ngbNav
+  #nav="ngbNav"
+  [(activeId)]="activeTab"
+  class="nav nav-tabs custom-tabs"
+  [destroyOnHide]="false"
+>
   <li [ngbNavItem]="1">
     <a ngbNavLink>Create Product</a>
     <ng-template ngbNavContent>
       <!-- Create Product Tab Pane -->
-      <div class="container mt-3">
-        <h2>Create Product</h2>
+      <div class="container mt-4">
+        <h2 class="section-title">Create Product</h2>
         <form [formGroup]="productForm" (ngSubmit)="save()">
           <div class="form-group">
             <label>Name</label>
-            <input type="text" formControlName="name" class="form-control" />
+            <input type="text" formControlName="name" class="form-control form-input" />
           </div>
           <div class="form-group">
             <label>Price</label>
-            <input type="number" formControlName="price" class="form-control" />
+            <input type="number" formControlName="price" class="form-control form-input" />
           </div>
           <div class="form-group">
             <label>Category</label>
-            <select formControlName="category" class="form-control">
+            <select formControlName="category" class="form-control form-input">
               <option value="">Select Category</option>
               <option *ngFor="let category of categories" [value]="category">
                 {{ category }}
@@ -28,20 +32,20 @@
           </div>
           <div class="form-group">
             <label>SKU</label>
-            <input type="text" formControlName="sku" class="form-control" />
+            <input type="text" formControlName="sku" class="form-control form-input" />
           </div>
           <div class="form-group">
             <label>Description</label>
-            <textarea formControlName="description" class="form-control"></textarea>
+            <textarea formControlName="description" class="form-control form-input"></textarea>
           </div>
           <div class="form-group">
             <label>Stock</label>
-            <input type="number" formControlName="stock" class="form-control" />
+            <input type="number" formControlName="stock" class="form-control form-input" />
           </div>
           <div class="form-group">
             <label>Added Date</label>
             <input
-              class="form-control"
+              class="form-control form-input"
               placeholder="yyyy-mm-dd"
               formControlName="addedDate"
               ngbDatepicker
@@ -49,17 +53,23 @@
               (click)="d.toggle()"
             />
           </div>
-          <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">
-            Save
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="productForm.reset()"
-            *ngIf="productForm.value.id"
-          >
-            Cancel
-          </button>
+          <div class="btn-group mt-3">
+            <button
+              type="submit"
+              class="btn btn-primary custom-btn"
+              [disabled]="productForm.invalid"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary custom-btn"
+              (click)="productForm.reset()"
+              *ngIf="productForm.value.id"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </ng-template>
@@ -68,9 +78,9 @@
     <a ngbNavLink>Store Products</a>
     <ng-template ngbNavContent>
       <!-- Store Products Tab Pane -->
-      <div class="container mt-3">
-        <h2>Store Products</h2>
-        <table class="table table-striped">
+      <div class="container mt-4">
+        <h2 class="section-title">Store Products</h2>
+        <table class="table table-hover custom-table">
           <thead class="thead-dark">
             <tr>
               <!-- Table headers -->
@@ -86,7 +96,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of products">
+            <tr *ngFor="let item of products" class="table-row">
               <!-- Table data -->
               <td>{{ item.id }}</td>
               <td>{{ item.name }}</td>
@@ -99,14 +109,14 @@
               <td>
                 <button
                   type="button"
-                  class="btn btn-success btn-sm"
+                  class="btn btn-success btn-sm custom-btn"
                   (click)="edit(item)"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
-                  class="btn btn-danger btn-sm"
+                  class="btn btn-danger btn-sm custom-btn"
                   (click)="delete(item)"
                 >
                   Delete
